@@ -170,7 +170,7 @@ export function Hero({ onBook, onCalculate, onSearch }: HeroProps) {
           e.preventDefault();
           onSearch({ body, budget });
         }}
-        className="relative z-10 mx-auto mb-16 mt-4 w-[calc(100%-2.5rem)] max-w-[1480px] grid-cols-1 gap-px overflow-hidden rounded-3xl border border-line bg-line backdrop-blur-2xl sm:grid-cols-[1fr_1fr_auto] lg:mx-auto lg:w-[calc(100%-5rem)]"
+        className="relative z-10 mx-auto mb-16 mt-4 w-[calc(100%-2.5rem)] max-w-[1480px] grid grid-cols-1 gap-px overflow-hidden rounded-3xl border border-line bg-line backdrop-blur-2xl sm:grid-cols-[1fr_1fr_auto] lg:mx-auto lg:w-[calc(100%-5rem)]"
       >
         <label className="flex flex-col gap-1 bg-panel px-6 py-4">
           <span className="text-[10px] font-semibold uppercase tracking-[0.26em] text-mute">Body type</span>

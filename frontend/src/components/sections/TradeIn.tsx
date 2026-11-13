@@ -76,30 +76,30 @@ export function TradeIn() {
           </motion.div>
         </div>
 
-        <div className="rounded-[32px] border border-line bg-coal p-7 sm:p-10">
-          <div className="grid grid-cols-4 gap-3">
+        <div className="rounded-[32px] border border-line bg-coal p-5 sm:p-8 md:p-10 min-w-0">
+          <div className="grid grid-cols-4 gap-2 sm:gap-3">
             {STEPS.map((s, i) => (
-              <button key={s} type="button" onClick={() => !result && setStep(i)} className="text-left">
+              <button key={s} type="button" onClick={() => !result && setStep(i)} className="text-left min-w-0">
                 <div className="h-0.5 overflow-hidden rounded-full bg-line">
                   <motion.div className="h-full bg-gold" animate={{ width: result || i <= step ? "100%" : "0%" }} transition={{ duration: 0.6 }} />
                 </div>
-                <p className={`mt-3 text-[10px] font-semibold uppercase tracking-[0.2em] ${i <= step || result ? "text-ivory" : "text-mute"}`}>
-                  <span className="font-mono text-gold">0{i + 1}</span> {s}
+                <p className={`mt-2.5 sm:mt-3 text-[9px] sm:text-[10px] font-semibold uppercase tracking-[0.14em] sm:tracking-[0.2em] truncate ${i <= step || result ? "text-ivory" : "text-mute"}`}>
+                  <span className="font-mono text-gold">0{i + 1}</span> <span className="hidden xs:inline">{s}</span>
                 </p>
               </button>
             ))}
           </div>
 
-          <div className="mt-10 min-h-[340px]">
+          <div className="mt-8 sm:mt-10 min-h-[340px]">
             <AnimatePresence mode="wait">
               {result ? (
                 <motion.div key="result" initial={{ opacity: 0, scale: 0.96 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.5 }} className="flex h-full flex-col">
                   <p className="text-[11px] font-semibold uppercase tracking-[0.3em] text-gold">Estimated trade-in value</p>
-                  <p className="mt-4 font-display text-[clamp(2rem,4.5vw,3.5rem)] font-black leading-none text-ivory">
-                    {formatINR(result.low)}
-                    <span className="mx-3 font-serif font-normal italic text-mute">to</span>
-                    {formatINR(result.high)}
-                  </p>
+                  <div className="mt-4 flex flex-wrap items-baseline gap-2 font-display text-2xl xs:text-3xl sm:text-4xl lg:text-5xl font-black leading-tight text-ivory">
+                    <span>{formatINR(result.low)}</span>
+                    <span className="font-serif font-normal italic text-mute text-lg sm:text-2xl">to</span>
+                    <span>{formatINR(result.high)}</span>
+                  </div>
                   <p className="mt-4 text-sm text-mute">{brand} · {year} · {km.toLocaleString("en-IN")} km · {condition} condition</p>
                   <div className="mt-10 grid gap-3 sm:grid-cols-[1fr_auto]">
                     <a href={waLink(msg)} target="_blank" rel="noopener noreferrer" className={btnWhatsApp}>
@@ -122,14 +122,14 @@ export function TradeIn() {
                     </div>
                   )}
                   {step === 1 && (
-                    <div className="mt-7 grid grid-cols-4 gap-2.5">
-                      {YEARS.map((y) => <button key={y} type="button" onClick={() => setYear(y)} className={`${chip(year === y)} font-mono`}>{y}</button>)}
+                    <div className="mt-7 grid grid-cols-2 xs:grid-cols-4 gap-2 sm:gap-2.5">
+                      {YEARS.map((y) => <button key={y} type="button" onClick={() => setYear(y)} className={`${chip(year === y)} font-mono text-center`}>{y}</button>)}
                     </div>
                   )}
                   {step === 2 && (
-                    <div className="mt-10">
-                      <p className="font-display text-6xl font-black tabular-nums text-ivory">{km.toLocaleString("en-IN")}<span className="ml-2 text-lg text-gold">km</span></p>
-                      <input className="mt-10" type="range" min={5000} max={120000} step={1000} value={km} onChange={(e) => setKm(Number(e.target.value))} aria-label="Kilometres" />
+                    <div className="mt-8 sm:mt-10">
+                      <p className="font-display text-4xl sm:text-5xl md:text-6xl font-black tabular-nums text-ivory">{km.toLocaleString("en-IN")}<span className="ml-2 text-base sm:text-lg text-gold">km</span></p>
+                      <input className="mt-6 sm:mt-10" type="range" min={5000} max={120000} step={1000} value={km} onChange={(e) => setKm(Number(e.target.value))} aria-label="Kilometres" />
                       <div className="mt-3 flex justify-between text-[10px] font-semibold uppercase tracking-[0.2em] text-mute"><span>5,000</span><span>1,20,000</span></div>
                     </div>
                   )}
