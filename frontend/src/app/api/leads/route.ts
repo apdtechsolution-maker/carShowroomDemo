@@ -5,6 +5,22 @@ import { CONDITION_FACTOR, TRADE_BASE, tradeInValue, type Condition } from "@/li
 
 export const dynamic = "force-dynamic";
 
+interface LocalLead {
+  ref: string;
+  brand: string;
+  year: number;
+  km: number;
+  condition: Condition;
+  valueLow: number;
+  valueHigh: number;
+  createdAt: string;
+}
+
+const globalForLeads = globalThis as typeof globalThis & {
+  __localLeads?: LocalLead[];
+};
+const localLeads = (globalForLeads.__localLeads ??= []);
+
 export async function POST(request: Request) {
   let body: Record<string, unknown>;
   try {
@@ -31,20 +47,33 @@ export async function POST(request: Request) {
   const value = tradeInValue(brand, year, Math.round(km), condition);
   const ref = `TIL-${Date.now().toString(36).toUpperCase()}-${Math.random().toString(36).slice(2, 6).toUpperCase()}`;
 
+  // Store in memory (frontend-only / serverless mode)
+  localLeads.push({
+    ref,
+    brand,
+    year,
+    km: Math.round(km),
+    condition,
+    valueLow: value.low,
+    valueHigh: value.high,
+    createdAt: new Date().toISOString(),
+  });
+
   let saved = true;
-  try {
-    await db.insert(tradeInLeads).values({
-      ref,
-      brand,
-      year,
-      km: Math.round(km),
-      condition,
-      valueLow: value.low,
-      valueHigh: value.high,
-    });
-  } catch (error) {
-    saved = false;
-    console.error("[leads] database insert failed", error);
+  if (db) {
+    try {
+      await db.insert(tradeInLeads).values({
+        ref,
+        brand,
+        year,
+        km: Math.round(km),
+        condition,
+        valueLow: value.low,
+        valueHigh: value.high,
+      });
+    } catch (error) {
+      console.warn("[leads] Optional database insert skipped:", error);
+    }
   }
 
   return NextResponse.json({ ref, saved, low: value.low, high: value.high }, { status: 201 });

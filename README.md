@@ -231,7 +231,7 @@ CREATE TABLE trade_in_leads (
 Ensure the following runtimes and tools are installed:
 - **Node.js**: `v20.0.0` or later
 - **npm**: `v10.0.0` or later (or `pnpm` / `yarn`)
-- **PostgreSQL**: Local instance or hosted database (e.g. Supabase, Neon, AWS RDS)
+- **PostgreSQL**: *(Optional)* The application operates out-of-the-box in frontend-first mode without requiring any database. When `DATABASE_URL` is omitted (e.g. during Vercel deployment), bookings and leads run seamlessly in memory with instant QR pass generation and WhatsApp dispatch. If a PostgreSQL instance is configured, it automatically persists records via Drizzle ORM.
 
 ### 1. Clone the Repository
 ```bash
@@ -244,22 +244,22 @@ cd carShowroomDemo/frontend
 npm install
 ```
 
-### 3. Configure Environment Variables
+### 3. Configure Environment Variables (Optional)
 Copy `.env.example` to `.env`:
 ```bash
 cp .env.example .env
 ```
-Update your credentials in `.env`:
+Update your credentials in `.env` if using a database:
 ```env
-# PostgreSQL connection string
+# Optional: PostgreSQL connection string (leave unset for frontend-only mode)
 DATABASE_URL="postgresql://postgres:postgres@localhost:5432/app_db"
 
 # Dealership WhatsApp Desk (Digits only with country code)
 NEXT_PUBLIC_WHATSAPP_NUMBER="919900000000"
 ```
 
-### 4. Push Database Schema
-Ensure PostgreSQL is active and run Drizzle push:
+### 4. Push Database Schema (Only if using PostgreSQL)
+If using PostgreSQL, push the schema:
 ```bash
 npx drizzle-kit push
 ```

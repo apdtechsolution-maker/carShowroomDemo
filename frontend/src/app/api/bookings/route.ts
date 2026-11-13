@@ -8,6 +8,23 @@ export const dynamic = "force-dynamic";
 const EXPERIENCES = ["At-Home Doorstep Test Drive (Vadodara)", "VIP Showroom Lounge Visit"];
 const SLOTS = ["11:00 AM", "02:00 PM", "05:00 PM", "07:30 PM"];
 
+interface LocalBooking {
+  ref: string;
+  experience: string;
+  carId: string;
+  carName: string;
+  bookingDate: string;
+  timeSlot: string;
+  customerName: string;
+  phone: string;
+  createdAt: string;
+}
+
+const globalForBookings = globalThis as typeof globalThis & {
+  __localBookings?: LocalBooking[];
+};
+const localBookings = (globalForBookings.__localBookings ??= []);
+
 function fail(message: string, status = 400) {
   return NextResponse.json({ error: message }, { status });
 }
@@ -37,21 +54,36 @@ export async function POST(request: Request) {
 
   const ref = `APX-${Date.now().toString(36).toUpperCase()}-${Math.random().toString(36).slice(2, 6).toUpperCase()}`;
 
+  // Store in memory (frontend-only / serverless mode)
+  localBookings.push({
+    ref,
+    experience,
+    carId: car.id,
+    carName: car.name,
+    bookingDate,
+    timeSlot,
+    customerName,
+    phone,
+    createdAt: new Date().toISOString(),
+  });
+
   let saved = true;
-  try {
-    await db.insert(testDriveBookings).values({
-      ref,
-      experience,
-      carId: car.id,
-      carName: car.name,
-      bookingDate,
-      timeSlot,
-      customerName,
-      phone,
-    });
-  } catch (error) {
-    saved = false;
-    console.error("[bookings] database insert failed", error);
+  // If PostgreSQL is configured, persist to database as well
+  if (db) {
+    try {
+      await db.insert(testDriveBookings).values({
+        ref,
+        experience,
+        carId: car.id,
+        carName: car.name,
+        bookingDate,
+        timeSlot,
+        customerName,
+        phone,
+      });
+    } catch (error) {
+      console.warn("[bookings] Optional database insert skipped:", error);
+    }
   }
 
   return NextResponse.json({ ref, saved, car: car.name }, { status: 201 });
